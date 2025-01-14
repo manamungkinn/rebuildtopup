@@ -22,7 +22,14 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <div
+          style={{
+            backgroundImage: `url('/images/bg-star.svg')`,
+          }}
+          className="bg-fixed bg-no-repeat bg-cover bg-center container w-full min-h-svh"
+        >
+          {children}
+        </div>
       </body>
     </html>
   );

@@ -1,101 +1,115 @@
+"use client";
+
 import Image from "next/image";
+import React, { useEffect, useRef, useState } from "react";
+import { IoMenuSharp } from "react-icons/io5";
+import Link from "next/link";
+import MainComponents from "@/components/MainComponents";
+import { FaHome } from "react-icons/fa";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  useEffect(() => {
+    // render midtrans snap token
+    const script = document.createElement("script");
+    script.setAttribute("data-client-key", process.env.NEXT_PUBLIC_CLIENT);
+    script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+    script.async = true;
+    document.body.appendChild(script);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+  const [open, setOpen] = useState(false);
+  const divKosong = useRef();
+  const aside = useRef();
+
+  useEffect(() => {
+    const preventScroll = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    };
+
+    const div = divKosong.current;
+
+    if (div) {
+      div.addEventListener("wheel", preventScroll, { passive: false });
+      div.addEventListener("touchmove", preventScroll, { passive: false });
+    }
+
+    return () => {
+      if (div) {
+        div.removeEventListener("wheel", preventScroll);
+        div.removeEventListener("touchmove", preventScroll);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (aside.current && !aside.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <header className="container">
+      {/*  min-[1300px]:max-w-screen-2xl */}
+      <nav className="fixed container z-[1]">
+        <div className="ml-20  shadow-lg bg-green-700 bg-opacity-70 backdrop-blur-sm top-0 ">
+          <div className="px-6 items-end flex">
+            <Link href="/" className="py-[22px] text-2xl font-bold text-main-secondary">
+              TopUp
+            </Link>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </nav>
+      <aside ref={aside} className={`fixed top-0 z-10 ${open ? ` backdrop-blur-md` : ``}`}>
+        <div className={`duration-300 relative bg-green-700 bg-opacity-70 h-svh py-[14px] px-[19px] ${open ? ` w-72` : `w-20`}`}>
+          <div className="flex gap-10">
+            <button
+              className=""
+              onClick={() => {
+                setOpen((prev) => !prev);
+              }}
+            >
+              <IoMenuSharp size={45} className={`bg-green-700  my-1 rounded p-2 text-3xl border duration-300 hover:bg-main-dark cursor-pointer`} />
+            </button>
+            <Link href="/" className={`duration-[8ms] ease-in py-[8px] text-2xl font-bold text-main-secondary ${open ? `scale-100 ` : `scale-0`}`}>
+              TopUp
+            </Link>
+          </div>
+
+          {/* Menu side */}
+          <>
+            <Link href={"/"} className="flex items-center justify-start m-4">
+              <div className={`duration-300 origin-left font-medium ${!open ? `scale-0` : ``}`}>
+                <FaHome size={25} />
+              </div>
+              <div className={`ml-2 duration-300 origin-left font-medium ${!open ? `scale-0` : ``}`}>Home</div>
+            </Link>
+          </>
+        </div>
+      </aside>
+
+      {/* Div Kosong */}
+      <div ref={divKosong} className={`${open ? `block` : `hidden`} z-[1] bg-white ml-72 w-full h-svh fixed bg-opacity-[0.02]`}></div>
+      {/*  ${open? ` ml-72`:`ml-20`} */}
+
+      {/* Main */}
+      <div className={`p-2 duration-300 ml-20`}>
+        <div className="text-blue-700  mt-[76px]">
+          <MainComponents />
+        </div>
+      </div>
+    </header>
   );
 }
